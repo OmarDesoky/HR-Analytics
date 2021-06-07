@@ -1,5 +1,5 @@
 rm(list=ls())
-Mydata <- read.csv("data.csv",header=TRUE,sep=",")
+Mydata <- read.csv("../../data/data.csv",header=TRUE,sep=",")
 
 # getting first 10 rows of data
 head(Mydata)
