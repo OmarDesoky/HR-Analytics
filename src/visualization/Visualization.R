@@ -8,6 +8,7 @@ if (!dir.exists("../../figures"))
   dir.create("../../figures")
   dir.create("../../figures/pie")
   dir.create("../../figures/barplot")
+  dir.create("../../figures/barplot/portion/")
 }
 Mydata <- read.csv("../../data/train_data.csv",header=TRUE,sep=",")
 
@@ -24,8 +25,12 @@ factor_feature<- function(feat){
   print(nlevels(fct))
 }
 
-pie_feature <- function(feat, lbls, colors, title){
-  save_fig = paste("../../figures/pie/" , title, ".jpg",sep="")
+pie_feature <- function(feat, lbls, colors, title, portion=FALSE){
+  if (!portion)
+    save_fig = paste("../../figures/pie/" , title, ".jpg",sep="")
+  else
+    save_fig = paste("../../figures/barplot/portion/" , title, ".jpg",sep="")
+  
   jpeg(save_fig, width = 720, height = 720)
   table_values<- table(feat)
   print(table_values)
@@ -37,16 +42,24 @@ pie_feature <- function(feat, lbls, colors, title){
   dev.off() 
 }
 
+
 barplot_feature <- function(feat, title){
+  
+  table_promo_feat<- table(Mydata$is_promoted,feat)
+  print(colnames(table_promo_feat))
+  portions <- table_promo_feat[2,] / table_promo_feat[1,]
+  print (portions)
+  
+  lbls <- c(colnames(table_promo_feat))
+  colors <- NULL
+  pie_feature(portions, lbls,colors,title, portion=TRUE)
+  
   save_fig = paste("../../figures/barplot/" , title, ".jpg",sep="")
   jpeg(save_fig, width = 720, height = 720)
-  table_promo_feat<- table(Mydata$is_promoted,feat)
-  print(table_promo_feat)
   barplot(table_promo_feat ,ylab="number of employees", col=c("red","green") , main=title)
   legend("topright", legend = c("NOT promoted", "promoted"), fill = c("red", "Green"))
   dev.off() 
 }
-
 
 # getting first 10 rows of data
 # getting summary statistics of data
