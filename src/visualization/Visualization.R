@@ -8,6 +8,7 @@ if (!dir.exists("../../figures"))
   dir.create("../../figures")
   dir.create("../../figures/pie")
   dir.create("../../figures/barplot")
+  dir.create("../../figures/histogram")
   dir.create("../../figures/barplot/portion/")
 }
 Mydata <- read.csv("../../data/train_data.csv",header=TRUE,sep=",")
@@ -61,6 +62,13 @@ barplot_feature <- function(feat, title){
   dev.off() 
 }
 
+histogram_feature <- function (feat, title){
+  save_fig = paste("../../figures/histogram/" , title, ".jpg",sep="")
+  jpeg(save_fig, width = 720, height = 720)
+  hist(feat, ylab="No. of Employees", main=title)
+  dev.off() 
+}
+
 # getting first 10 rows of data
 # getting summary statistics of data
 show_main_info()
@@ -111,7 +119,18 @@ lbls <- c("other","referred","sourcing")
 colors <- c("red","blue","green")
 title <- "recruitment_channels_ratio"
 pie_feature(Mydata$recruitment_channel, lbls, colors,title)
-
+#-------------------------------------------------------------------------------------------------
+# showing percentage of how many employees have KPI>0.8
+lbls <- c("less (0)","greater (1)")
+colors <- NULL
+title <- "KPIs_met..80."
+pie_feature(Mydata$KPIs_met..80., lbls, colors,title)
+#-------------------------------------------------------------------------------------------------
+# showing percentage of how many employees won awards
+lbls <- c("no win(0)","won (1)")
+colors <- NULL
+title <- "awards_won"
+pie_feature(Mydata$awards_won., lbls, colors,title)
 
 #-------------------------------------------------------------------------------------------------
 # showing how many males/females were (NOT)promoted
@@ -128,8 +147,6 @@ anyNA(Mydata$no_of_trainings)
 title <- "training_promotion"
 barplot_feature(Mydata$no_of_trainings, title)
 #-------------------------------------------------------------------------------------------------
-# showing age histogram
-hist(Mydata$age)
 # showing how many employees from different ages level were (NOT)promoted
 title <- "age_promotion"
 barplot_feature(Mydata$age, title)
@@ -156,4 +173,47 @@ barplot_feature(Mydata$length_of_service, title)
 title <- "region_promotion"
 barplot_feature(Mydata$region, title)
 #-------------------------------------------------------------------------------------------------
+# showing how many employees at different departments were (NOT)promoted.
+title <- "department_promotion"
+barplot_feature(Mydata$department, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different recruitment channels were (NOT)promoted.
+title <- "rec_channels_promotion"
+barplot_feature(Mydata$recruitment_channel, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different no. of trainings were (NOT)promoted.
+title <- "no_trainings_promotion"
+barplot_feature(Mydata$no_of_trainings, title)
+#-------------------------------------------------------------------------------------------------
 
+
+
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "no_of_trainings"
+histogram_feature(Mydata$no_of_trainings, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "age"
+histogram_feature(Mydata$age, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "previous_year_rating"
+histogram_feature(Mydata$previous_year_rating, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "length_of_service"
+histogram_feature(Mydata$length_of_service, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+#title <- "KPIs_met..80."
+#histogram_feature(Mydata$KPIs_met..80. , title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+#title <- "awards_won."
+#histogram_feature(Mydata$awards_won., title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "avg_training_score"
+histogram_feature(Mydata$avg_training_score, title)
+#-------------------------------------------------------------------------------------------------
