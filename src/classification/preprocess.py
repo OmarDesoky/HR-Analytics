@@ -1,8 +1,8 @@
 import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 
-df = pd.read_csv("../../data/train_data.csv")
 
 def show_null_featurs(df):
     # print (df.describe())
@@ -14,6 +14,7 @@ def show_null_featurs(df):
 
 def drop_missing_rows(df):
     df = df.dropna(subset=["previous_year_rating"])
+    return df
     # show_null_featurs(df)
 
 
@@ -35,6 +36,7 @@ def cure_missing_data(df, num, cat):
         if df[i].isnull().any():
             df[i].fillna(df[i].mean(),inplace=True)
     show_null_featurs(df)
+    return df
 
 
 def one_hot_encode_cat(df, cat):
@@ -52,3 +54,33 @@ def one_hot_encode_cat(df, cat):
         df = df.drop([i],axis=1)
     return df
     
+
+def divide_data(df):
+    X = df.iloc[:, :-1]
+    Y = df['is_promoted']
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    print (f'x_train.shape: {x_train.shape}')
+    print (f'y_train.shape: {y_train.shape}')
+    print (f'x_test.shape: {x_test.shape}')
+    print (f'y_test.shape: {y_test.shape}')
+    return x_train, x_test, y_train, y_test
+    
+
+
+
+def preprocess(path = "../../data/train_data.csv"):
+    df = pd.read_csv(path)
+
+    #eliminate nulls
+    df = drop_missing_rows(df)
+    num, cat = get_num_cat (df)
+    df = cure_missing_data(df, num, cat)
+
+    #one hot encoding
+    df = one_hot_encode_cat(df, cat)
+
+    #spit data
+    return divide_data(df)
+
+
+
