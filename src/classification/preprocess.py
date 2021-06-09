@@ -93,7 +93,3 @@ def preprocess(path = "../../data/train_data.csv"):
 
     #spit data
     return divide_data(df)
-
-
-
-preprocess()
