@@ -1,6 +1,6 @@
 import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.model_selection import train_test_split
 
 
@@ -42,8 +42,13 @@ def cure_missing_data(df, num, cat):
 def one_hot_encode_cat(df, cat):
     # creating instance of one-hot-encoder
     enc = OneHotEncoder(handle_unknown='ignore')
+    le = LabelEncoder()
     # passing bridge-types-cat column (label encoded values of bridge_types)
     for i in cat:
+        if i == "region":
+            df[i] = LabelEncoder.fit_transform(le, y=df[i])
+            print (f'after feature: {i}: dataframe shape: {df.shape}')
+            continue
         enc_df = pd.DataFrame(enc.fit_transform( df[[i]] ).toarray())
         #Set columns names
         col_naems = enc.get_feature_names()
@@ -52,6 +57,8 @@ def one_hot_encode_cat(df, cat):
         df = df.join(enc_df)
         # remove original columns
         df = df.drop([i],axis=1)
+        print (f'after feature: {i}: dataframe shape: {df.shape}')
+            
     return df
     
 
@@ -70,17 +77,23 @@ def divide_data(df):
 
 def preprocess(path = "../../data/train_data.csv"):
     df = pd.read_csv(path)
-
+    # dont need it at all
+    df = df.drop(["employee_id"],axis=1)
     #eliminate nulls
-    df = drop_missing_rows(df)
+    # df = drop_missing_rows(df)
     num, cat = get_num_cat (df)
     df = cure_missing_data(df, num, cat)
-
+    
     #one hot encoding
     df = one_hot_encode_cat(df, cat)
+
+    #check for nans
+    df1 = df[df.isna().any(axis=1)]
+    print(f'NANS: {df1}')
 
     #spit data
     return divide_data(df)
 
 
 
+preprocess()
