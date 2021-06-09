@@ -1,8 +1,8 @@
 import pandas as pd
 from pandas.api.types import is_numeric_dtype, is_string_dtype
+from sklearn.preprocessing import OneHotEncoder
 
 df = pd.read_csv("../../data/train_data.csv")
-
 
 def show_null_featurs(df):
     # print (df.describe())
@@ -37,3 +37,18 @@ def cure_missing_data(df, num, cat):
     show_null_featurs(df)
 
 
+def one_hot_encode_cat(df, cat):
+    # creating instance of one-hot-encoder
+    enc = OneHotEncoder(handle_unknown='ignore')
+    # passing bridge-types-cat column (label encoded values of bridge_types)
+    for i in cat:
+        enc_df = pd.DataFrame(enc.fit_transform( df[[i]] ).toarray())
+        #Set columns names
+        col_naems = enc.get_feature_names()
+        enc_df.columns = col_naems
+        # merge with main df bridge_df on key values
+        df = df.join(enc_df)
+        # remove original columns
+        df = df.drop([i],axis=1)
+    return df
+    
