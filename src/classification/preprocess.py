@@ -38,6 +38,12 @@ def cure_missing_data(df, num, cat):
     show_null_featurs(df)
     return df
 
+def map_regions(df):
+    df_i = []
+    for rgn in df:
+        rgn = int(rgn.replace("region_",""))
+        df_i.append(rgn)
+    return df_i
 
 def one_hot_encode_cat(df, cat):
     # creating instance of one-hot-encoder
@@ -46,7 +52,8 @@ def one_hot_encode_cat(df, cat):
     # passing bridge-types-cat column (label encoded values of bridge_types)
     for i in cat:
         if i == "region":
-            df[i] = LabelEncoder.fit_transform(le, y=df[i])
+            # df[i] = LabelEncoder.fit_transform(le, y=df[i])
+            df[i] = map_regions(df[i])
             print (f'after feature: {i}: dataframe shape: {df.shape}')
             continue
         enc_df = pd.DataFrame(enc.fit_transform( df[[i]] ).toarray())
@@ -63,9 +70,10 @@ def one_hot_encode_cat(df, cat):
     
 
 def divide_data(df):
-    X = df.iloc[:, :-1]
     Y = df['is_promoted']
+    X = df.drop(["is_promoted"],axis=1)
     x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    print (f'Features: {X.columns}')
     print (f'x_train.shape: {x_train.shape}')
     print (f'y_train.shape: {y_train.shape}')
     print (f'x_test.shape: {x_test.shape}')
@@ -93,3 +101,26 @@ def preprocess(path = "../../data/train_data.csv"):
 
     #spit data
     return divide_data(df)
+
+
+def return_test_data(path="../../data/test_data.csv"):
+    df = pd.read_csv(path)
+    # dont need it at all
+    emp_id = df['employee_id']
+    df = df.drop(["employee_id"],axis=1)
+    #eliminate nulls
+    # df = drop_missing_rows(df)
+    num, cat = get_num_cat (df)
+    df = cure_missing_data(df, num, cat)
+    
+    #one hot encoding
+    df = one_hot_encode_cat(df, cat)
+
+    #check for nans
+    df1 = df[df.isna().any(axis=1)]
+    print(f'NANS: {df1}')
+
+    X = df
+    print (f'x_test.shape: {X.shape}')
+    return X,emp_id
+
