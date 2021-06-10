@@ -25,7 +25,8 @@ show_main_info <- function()
 
 factor_feature<- function(feat){
   fct<-factor(feat)
-  print(paste("levels: ",levels(fct)))
+  print(levels(fct))
+  print(nlevels(fct))
 }
 
 pie_feature <- function(feat, lbls, colors, title, portion=FALSE){
@@ -49,6 +50,7 @@ pie_feature <- function(feat, lbls, colors, title, portion=FALSE){
 barplot_feature <- function(feat, title){
   
   table_promo_feat<- table(Mydata$is_promoted,feat)
+  print (table_promo_feat)
   print(colnames(table_promo_feat))
   portions <- table_promo_feat[2,] / table_promo_feat[1,]
   print (portions)
@@ -70,34 +72,34 @@ histogram_feature <- function (feat, title){
   hist(feat, ylab="No. of Employees", main=title)
   dev.off() 
 }
-#-------------------------------------------------------------------------------------------------
-
 
 # getting first 10 rows of data
 # getting summary statistics of data
 show_main_info()
 #-------------------------------------------------------------------------------------------------
-
-
-#Catigorical features: department, region, education, gender, recruitment_channel
-cat_features <- Mydata[, 2:6] 
-#Continuous features: age, no_of_trainings, previous_year_rating, length_of_service, KPIs_met >80%,
-#                      awards_won?	, avg_training_score
-cont_features <- Mydata[, 7:13]
-#1: is promoted / 0: not promoted
-target <- Mydata[, 14]
+# showing levels of gender
+# checking if there is a missing data in gender field
+factor_feature(Mydata$gender)
 #-------------------------------------------------------------------------------------------------
-
-
-# Show levels and factor for each catiforical feature
-for (i in 1:ncol(cat_features)){
-  print (paste("Factor feature: ",colnames(cat_features)[i]))
-  factor_feature(cat_features[i])
-}
+# showing levels of education
+# checking if there is a missing data in education field
+factor_feature(Mydata$education)
 #-------------------------------------------------------------------------------------------------
+# showing levels of recruitment_channel
+# checking if there is a missing data in recruitment_channel field
+factor_feature(Mydata$recruitment_channel)
+#-------------------------------------------------------------------------------------------------
+# showing levels of region
+# checking if there is a missing data in region field
+factor_feature(Mydata$region)
+#-------------------------------------------------------------------------------------------------  
+# showing levels of department
+# checking if there is a missing data in department field
+factor_feature(Mydata$department)
 
 
 
+#-------------------------------------------------------------------------------------------------
 # showing percentage of how many employees are males and how many are females
 lbls <- c("female","male")
 colors <- c("red","blue")
@@ -133,30 +135,93 @@ lbls <- c("no win(0)","won (1)")
 colors <- NULL
 title <- "awards_won"
 pie_feature(Mydata$awards_won., lbls, colors,title)
-#-------------------------------------------------------------------------------------------------
-# showing percentage of how many employees are in different regions
-lbls <- NULL
-colors <- NULL
-title <- "regions"
-pie_feature(Mydata$region, lbls, colors,title)
-
 
 #-------------------------------------------------------------------------------------------------
-#Show different portions of features against promotion
-for (i in 1:ncol(Mydata)){
-  title <- colnames(Mydata)[i]
-  barplot_feature(Mydata[,i], title)
-}
+# showing how many males/females were (NOT)promoted
+title <- "gender_promotion"
+barplot_feature(Mydata$gender, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees from different education level were (NOT)promoted
+title <- "education_promotion"
+barplot_feature(Mydata$education, title)
+#-------------------------------------------------------------------------------------------------
+# checking if there is a missing data in no_of_training field (if so we should add 0 in NA)
+anyNA(Mydata$no_of_trainings)
+# showing how many employees with different no of training were (NOT)promoted.
+title <- "training_promotion"
+barplot_feature(Mydata$no_of_trainings, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees from different ages level were (NOT)promoted
+title <- "age_promotion"
+barplot_feature(Mydata$age, title)
+#-------------------------------------------------------------------------------------------------
+# checking if there is a missing data in awards_won field (if so we should add 0 in NA)
+anyNA(Mydata$awards_won)
+# showing how many employees with awards won were (NOT)promoted.
+title <- "awards_promotion"
+barplot_feature(Mydata$awards_won, title)
+#-------------------------------------------------------------------------------------------------
+# checking if there is a missing data in avg_training_score field (if so we should add 0 in NA)
+anyNA(Mydata$avg_training_score)
+# showing how many employees with different avg_training_score were (NOT)promoted.
+title <- "training_promotion"
+barplot_feature(Mydata$avg_training_score, title)
+#-------------------------------------------------------------------------------------------------
+# checking if there is a missing data in length_of_service field (if so we should add 0 in NA)
+anyNA(Mydata$length_of_service)
+# showing how many employees with different ours of training were (NOT)promoted.
+title <- "service_promotion"
+barplot_feature(Mydata$length_of_service, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different regions were (NOT)promoted.
+title <- "region_promotion"
+barplot_feature(Mydata$region, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different departments were (NOT)promoted.
+title <- "department_promotion"
+barplot_feature(Mydata$department, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different recruitment channels were (NOT)promoted.
+title <- "rec_channels_promotion"
+barplot_feature(Mydata$recruitment_channel, title)
+#-------------------------------------------------------------------------------------------------
+# showing how many employees at different no. of trainings were (NOT)promoted.
+title <- "no_trainings_promotion"
+barplot_feature(Mydata$no_of_trainings, title)
+#-------------------------------------------------------------------------------------------------
+
 
 
 #-------------------------------------------------------------------------------------------------
-# show histogram of continous features
-for (i in 1:ncol(cont_features)){
-  title <- colnames(cont_features)[i]
-  histogram_feature(cont_features[,i], title)
-}
-
+# show histogram of features
+title <- "no_of_trainings"
+histogram_feature(Mydata$no_of_trainings, title)
 #-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "age"
+histogram_feature(Mydata$age, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "previous_year_rating"
+histogram_feature(Mydata$previous_year_rating, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "length_of_service"
+histogram_feature(Mydata$length_of_service, title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+#title <- "KPIs_met..80."
+#histogram_feature(Mydata$KPIs_met..80. , title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+#title <- "awards_won."
+#histogram_feature(Mydata$awards_won., title)
+#-------------------------------------------------------------------------------------------------
+# show histogram of features
+title <- "avg_training_score"
+histogram_feature(Mydata$avg_training_score, title)
+#-------------------------------------------------------------------------------------------------
+
 #boxplot for outliers
 for(i in 7:ncol(Mydata)) {       # for-loop over columns
   print (colnames(Mydata)[i])
@@ -182,7 +247,6 @@ for(i in 7:ncol(Mydata)) {       # for-loop over columns
   print(cor (Mydata[,i] , Mydata$is_promoted))
 }
 # KPI and awards won shows good results of Linearity
-
 #-------------------------------------------------------------------------------------------------
 # Try linear model with KPI and awards won and avg_traininf_score
 model <- lm(Mydata$is_promoted ~ Mydata$KPIs_met..80. + Mydata$awards_won. + Mydata$avg_training_score)
@@ -196,5 +260,11 @@ jpeg("../../figures/multiple/correlations.png", width = 720, height = 720)
 corrplot(correlations, method="circle")
 dev.off()
 #-------------------------------------------------------------------------------------------------
-
+library(caret)
+x <- Mydata[,1:13]
+y <- Mydata[,14]
+scales <- list(x=list(relation="free"), y=list(relation="free"))
+print (scales)
+jpeg("../../figures/multiple/correlations.png", width = 720, height = 720)
+featurePlot(x=x, y=y, plot="density", scales=scales)
 

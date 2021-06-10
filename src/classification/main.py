@@ -7,6 +7,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
+from sklearn.svm import SVC
 import os
 
 
@@ -14,12 +15,12 @@ import os
 
 def CLF(X_train, x_test, Y_train, y_test, clf_name):
     # Accuracies:
-    # train: val: precision: recall: test
-    # KNN: 0.92 0.66 0.67 0.13 --
-    # GLM: 0.93 0.87 0.83 0.25 0.35
-    # GNB: 0.8 0.7 0.27 0.23 0.259
-    # DT:  0.89 0.68 0.37 0.42 0.426
-    # SVC: 0.917 0.68 -- -- --
+    #      train:   val:  precision:    recall:     test
+    # GLM: 0.93     0.87    0.83        0.25        0.35
+    # KNN: 0.92     0.66    0.67        0.13        --
+    # GNB: 0.8      0.7     0.27        0.23        0.259
+    # DT:  0.89     0.68    0.37        0.42        0.426
+    # SVC: 0.917    0.68    --          0.29          --
 
     print (f'Classifing using: {clf_name} cLassifier')
     if clf_name == "LogisticRegression":
@@ -30,6 +31,8 @@ def CLF(X_train, x_test, Y_train, y_test, clf_name):
         clf = GaussianNB()
     elif clf_name == "DecisionTreeClassifier":
         clf = DecisionTreeClassifier()
+    elif clf_name == "SVC":
+        clf = SVC()
 
     clf.fit(X_train, Y_train)
     y_pred = clf.predict(x_test)
@@ -54,7 +57,17 @@ def CLF(X_train, x_test, Y_train, y_test, clf_name):
 def CLF_predict(clf, clf_name):
     # get test data
     X, emp_id = preprocess.return_test_data()
-    y_pred = clf.predict(X)
+    if clf_name == "SVC":
+        y_pred = clf.predict_proba(X)[:,1]
+        y_pred_int = []
+        for yp in y_pred:
+            if yp > 0.5: 
+                y_pred_int.append(1)
+            else:
+                y_pred_int.append(0)
+        y_pred = y_pred_int
+    else:
+        y_pred = clf.predict(X)
     dict= {'employee_id':emp_id, 'is_promoted':y_pred}  
     df = pd.DataFrame(dict,columns=['employee_id','is_promoted'])
     file_name = "results_"+clf_name+".csv"
@@ -64,7 +77,7 @@ def CLF_predict(clf, clf_name):
 if __name__ == "__main__":
 
     X_train, x_test, Y_train, y_test = preprocess.preprocess()
-    clf_names = ["LogisticRegression", "KNeighborsClassifier", "GaussianNB", "DecisionTreeClassifier"]
+    clf_names = ["LogisticRegression", "KNeighborsClassifier", "GaussianNB", "DecisionTreeClassifier", "SVC"]
     print("Data is loaded successfully ..")
     print("Please pick one of these classifiers to be used:")
     for i,c in enumerate(clf_names):
