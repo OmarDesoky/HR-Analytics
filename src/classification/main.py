@@ -15,12 +15,12 @@ import os
 
 def CLF(X_train, x_test, Y_train, y_test, clf_name):
     # Accuracies:
-    #      train:   val:  precision:    recall:     test
-    # GLM: 0.93     0.87    0.83        0.25        0.35
-    # KNN: 0.92     0.66    0.67        0.13        --
-    # GNB: 0.8      0.7     0.27        0.23        0.259
-    # DT:  0.89     0.68    0.37        0.42        0.426
-    # SVC: 0.917    0.68    --          --          0.29
+    #      train:   val:  precision:    recall:     test:       AUC:
+    # GLM: 0.93     0.87    0.83        0.25        0.35        0.87
+    # KNN: 0.92     0.66    0.67        0.13        --          0.66
+    # GNB: 0.8      0.7     0.27        0.23        0.259       0.75
+    # DT:  0.89     0.68    0.37        0.42        0.426       0.68
+    # SVC: 0.917    0.68    --          --          0.29        --
 
     print (f'Classifing using: {clf_name} cLassifier')
     if clf_name == "LogisticRegression":
@@ -82,12 +82,11 @@ if __name__ == "__main__":
     for i,c in enumerate(clf_names):
         print(f'To use: {c} \t\tpress {i}')
     action = int(input(">> "))
-    
     if action >= len(clf_names) or action<0:
         print("invalid index.. goodbye")
         
-    clf_name = clf_names[i]
-
+    clf_name = clf_names[action]
+    
     model_name = "model_"+clf_name+".h5"
     if os.path.exists(model_name):
         print("Model already exists")
@@ -99,5 +98,5 @@ if __name__ == "__main__":
     else:
         clf = CLF(X_train, x_test, Y_train, y_test, clf_name)
 
-    dump(clf, model_name)
-    CLF_predict(clf, clf_name)
+    # dump(clf, model_name)
+    # CLF_predict(clf, clf_name)
