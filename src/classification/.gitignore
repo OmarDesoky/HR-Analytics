@@ -1,4 +1,6 @@
 __pycache__
 .vscode
 results.csv
-ROC.png
+*.png
+*.h5
+*.csv
