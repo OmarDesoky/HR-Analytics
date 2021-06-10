@@ -20,7 +20,7 @@ def CLF(X_train, x_test, Y_train, y_test, clf_name):
     # KNN: 0.92     0.66    0.67        0.13        --
     # GNB: 0.8      0.7     0.27        0.23        0.259
     # DT:  0.89     0.68    0.37        0.42        0.426
-    # SVC: 0.917    0.68    --          0.29          --
+    # SVC: 0.917    0.68    --          --          0.29
 
     print (f'Classifing using: {clf_name} cLassifier')
     if clf_name == "LogisticRegression":
@@ -36,20 +36,20 @@ def CLF(X_train, x_test, Y_train, y_test, clf_name):
 
     clf.fit(X_train, Y_train)
     y_pred = clf.predict(x_test)
-
     print (f'Training accuracy: {metrics.accuracy_score(y_test, y_pred)}')
-    y_pred_prob = clf.predict_proba(x_test)[:,1]
-    fpr, tpr, thsh = metrics.roc_curve(y_test, y_pred_prob)
-    plt.plot(fpr,tpr)
-    plot_name = "ROC_"+clf_name+".png"
-    plt.savefig(plot_name)
-    auc = metrics.roc_auc_score(y_test, y_pred_prob)
-    print(f'AUC: {round(auc,2)}')
-    # Model Precision: what percentage of positive tuples are labeled as such?
-    print("Precision:",metrics.precision_score(y_test, y_pred))
+    if clf_name != "SVC":
+        y_pred_prob = clf.predict_proba(x_test)[:,1]
+        fpr, tpr, thsh = metrics.roc_curve(y_test, y_pred_prob)
+        plt.plot(fpr,tpr)
+        plot_name = "ROC_"+clf_name+".png"
+        plt.savefig(plot_name)
+        auc = metrics.roc_auc_score(y_test, y_pred_prob)
+        print(f'AUC: {round(auc,2)}')
+        # Model Precision: what percentage of positive tuples are labeled as such?
+        print("Precision:",metrics.precision_score(y_test, y_pred))
 
-    # Model Recall: what percentage of positive tuples are labelled as such?
-    print("Recall:",metrics.recall_score(y_test, y_pred))
+        # Model Recall: what percentage of positive tuples are labelled as such?
+        print("Recall:",metrics.recall_score(y_test, y_pred))
     return clf
 
 
@@ -57,8 +57,8 @@ def CLF(X_train, x_test, Y_train, y_test, clf_name):
 def CLF_predict(clf, clf_name):
     # get test data
     X, emp_id = preprocess.return_test_data()
+    y_pred = clf.predict(X)
     if clf_name == "SVC":
-        y_pred = clf.predict_proba(X)[:,1]
         y_pred_int = []
         for yp in y_pred:
             if yp > 0.5: 
@@ -66,8 +66,7 @@ def CLF_predict(clf, clf_name):
             else:
                 y_pred_int.append(0)
         y_pred = y_pred_int
-    else:
-        y_pred = clf.predict(X)
+
     dict= {'employee_id':emp_id, 'is_promoted':y_pred}  
     df = pd.DataFrame(dict,columns=['employee_id','is_promoted'])
     file_name = "results_"+clf_name+".csv"
